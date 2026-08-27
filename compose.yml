@@ -14,7 +14,7 @@ services:
       - caddy-data:/data
 
   portainer:
-    image: portainer/portainer-ce:2.44.0
+    image: portainer/portainer-ce:2.45.0
     restart: unless-stopped
     labels:
       caddy: portainer.localhost
