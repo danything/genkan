@@ -20,9 +20,8 @@ services:
       caddy: arcane.localhost
       caddy.reverse_proxy: "{{upstreams 3552}}"
     environment:
-      # Arcane が保存する認証情報の暗号化キー。32文字以上が必須。
-      # init.sh が初回に .env へランダム値を書き出す。
-      - ENCRYPTION_KEY=${ARCANE_ENCRYPTION_KEY:?init.sh を実行するか、.env に32文字以上のランダムな ARCANE_ENCRYPTION_KEY を設定してください}
+      # 認証情報の暗号化に使う ENCRYPTION_KEY (32文字以上が必須) は、
+      # init.sh が生成する compose.override.yml から渡される
       - APP_URL=https://arcane.localhost
       # proxy ネットワーク上の Caddy からの X-Forwarded-Proto を信頼し、Secure Cookie を発行させる
       - TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16

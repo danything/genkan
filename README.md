@@ -14,12 +14,17 @@
 curl -sf https://raw.githubusercontent.com/danything/genkan/main/init.sh | sh -s
 ```
 
-初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で変更に追従してから再適用します。同梱の Arcane 用の暗号化キーも、初回だけ `.env` に生成されます。手動なら:
+初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で変更に追従してから再適用します。同梱の Arcane 用の暗号化キーも、初回だけ `compose.override.yml` に生成されます。手動なら:
 
 ```sh
 git clone https://github.com/danything/genkan.git
 cd genkan
-printf 'ARCANE_ENCRYPTION_KEY=%s\n' "$(od -An -tx1 -N32 /dev/urandom | tr -d ' \n')" > .env
+cat > compose.override.yml <<EOT
+services:
+  arcane:
+    environment:
+      - ENCRYPTION_KEY=$(od -An -tx1 -N32 /dev/urandom | tr -d ' \n')
+EOT
 docker compose up -d
 ```
 
@@ -59,7 +64,11 @@ docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 
 DockerをWeb UIで管理できる [Arcane](https://github.com/getarcaneapp/arcane) が同梱されています → http://arcane.localhost
 
-Arcaneは保存する認証情報の暗号化に32文字以上の `ENCRYPTION_KEY` を要求します。これは `.env` の `ARCANE_ENCRYPTION_KEY` から渡されます。`.env` はホストごとの秘密なのでコミットされません（消すとArcaneに保存済みの認証情報が復号できなくなります）。
+Arcaneは保存する認証情報の暗号化に32文字以上の `ENCRYPTION_KEY` を要求します。これは `init.sh` が初回に生成する `compose.override.yml` から渡されます。Composeが自動で読み込むので `-f` の指定は要りません。
+
+`compose.override.yml` はホストごとの秘密なのでコミットされません（消すとArcaneに保存済みの認証情報が復号できなくなります）。このファイルが無いままArcaneを起動すると `ENCRYPTION_KEY passphrase must be at least 32 characters in production` で再起動を繰り返すので、`docker compose logs arcane` で確認してください。
+
+`compose.yml` を直接編集せずに設定を足したいときも、このファイルに書き足せます。
 
 以前のPortainer同梱版から更新した場合、古いコンテナは `init.sh`（`docker compose up -d --remove-orphans`）で片付きます。データを消してよければボリュームも削除してください:
 
