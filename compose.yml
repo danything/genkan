@@ -13,17 +13,24 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy-data:/data
 
-  portainer:
-    image: portainer/portainer-ce:2.45.0
+  arcane:
+    image: ghcr.io/getarcaneapp/arcane:v2.10.2
     restart: unless-stopped
     labels:
-      caddy: portainer.localhost
-      caddy.reverse_proxy: "{{upstreams 9000}}"
+      caddy: arcane.localhost
+      caddy.reverse_proxy: "{{upstreams 3552}}"
+    environment:
+      # Arcane が保存する認証情報の暗号化キー。32文字以上が必須。
+      # init.sh が初回に .env へランダム値を書き出す。
+      - ENCRYPTION_KEY=${ARCANE_ENCRYPTION_KEY:?init.sh を実行するか、.env に32文字以上のランダムな ARCANE_ENCRYPTION_KEY を設定してください}
+      - APP_URL=https://arcane.localhost
+      # proxy ネットワーク上の Caddy からの X-Forwarded-Proto を信頼し、Secure Cookie を発行させる
+      - TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     networks:
       - proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer-data:/data
+      - arcane-data:/app/data
 
 networks:
   proxy:
@@ -31,4 +38,4 @@ networks:
 
 volumes:
   caddy-data:
-  portainer-data:
+  arcane-data:
