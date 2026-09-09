@@ -14,7 +14,7 @@
 curl -sf https://raw.githubusercontent.com/danything/genkan/main/init.sh | sh -s
 ```
 
-初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で変更に追従してから再適用します。同梱の Arcane 用の暗号化キーも、初回だけ `compose.override.yml` に生成されます。手動なら:
+初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で変更に追従してから再適用します。同梱の Arcane 用の暗号化キーと管理者パスワードも、初回だけ生成されます（[その他](#その他)）。手動なら:
 
 ```sh
 git clone https://github.com/danything/genkan.git
@@ -63,6 +63,15 @@ docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 ## その他
 
 DockerをWeb UIで管理できる [Arcane](https://github.com/getarcaneapp/arcane) が同梱されています → http://arcane.localhost
+
+Arcaneの管理者は `arcane` / `arcane-admin` で作られ、初回ログイン時にパスワード変更を強制されます。手で入力するのは面倒なので、`init.sh` が起動後にAPI経由で強いパスワードを生成して設定し、`arcane-password.txt` に保存したうえで画面にも表示します。すでに変更済みなら何もしません。
+
+```
+ユーザー名: arcane
+パスワード: arcane-password.txt の2行目
+```
+
+`arcane-password.txt` もホストごとの秘密なのでコミットされません。パスワードを忘れたときはこのファイルを見てください（消してしまった場合はArcaneのUIから変更するか、`arcane-data` ボリュームを消して作り直しになります）。
 
 Arcaneは保存する認証情報の暗号化に32文字以上の `ENCRYPTION_KEY` を要求します。これは `init.sh` が初回に生成する `compose.override.yml` から渡されます。Composeが自動で読み込むので `-f` の指定は要りません。
 

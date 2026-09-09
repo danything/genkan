@@ -14,7 +14,7 @@ For local development, `*.localhost` works out of the box (no DNS setup). Point 
 curl -sf https://raw.githubusercontent.com/danything/genkan/main/init.sh | sh -s
 ```
 
-On first run it clones this repository and starts the proxy; on subsequent runs it pulls the latest changes and re-applies them. It also generates the encryption key for the bundled Arcane into `compose.override.yml`, once. Or manually:
+On first run it clones this repository and starts the proxy; on subsequent runs it pulls the latest changes and re-applies them. It also generates the encryption key and the admin password for the bundled Arcane, once (see [Extras](#extras)). Or manually:
 
 ```sh
 git clone https://github.com/danything/genkan.git
@@ -63,6 +63,15 @@ For real domains, certificates are obtained from Let's Encrypt automatically.
 ## Extras
 
 Comes with [Arcane](https://github.com/getarcaneapp/arcane), a web UI for managing Docker → http://arcane.localhost
+
+Arcane's admin user is created as `arcane` / `arcane-admin` and forces a password change on first login. Typing that in by hand is a chore, so `init.sh` generates a strong password and sets it through the API right after startup, saves it to `arcane-password.txt`, and prints it. If the password has already been changed, it does nothing.
+
+```
+Username: arcane
+Password: the second line of arcane-password.txt
+```
+
+`arcane-password.txt` is a per-host secret and is not committed. Look there if you forget the password (if you deleted the file, change the password from Arcane's UI, or remove the `arcane-data` volume and start over).
 
 Arcane requires an `ENCRYPTION_KEY` of at least 32 characters to encrypt the credentials it stores. It is passed in from `compose.override.yml`, which `init.sh` generates on first run; Compose picks that file up automatically, so no `-f` flag is needed.
 
