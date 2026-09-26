@@ -30,7 +30,7 @@ docker compose up -d
 
 ## Adding a project
 
-Add two labels and join the `proxy` network.
+Add two labels and join the `genkan` network.
 
 ```yml
 services:
@@ -38,10 +38,10 @@ services:
     labels:
       caddy: myapp.localhost
       caddy.reverse_proxy: "{{upstreams 5173}}"
-    networks: [default, proxy]
+    networks: [default, genkan]
 
 networks:
-  proxy:
+  genkan:
     external: true
 ```
 
@@ -49,6 +49,10 @@ networks:
 - Do not publish ports in the project's compose file; not publishing is exactly what makes port conflicts impossible
 
 Then open http://myapp.localhost (it redirects to HTTPS automatically).
+
+### Upgrading from the `proxy` network
+
+The network used to be called `proxy`. Such a generic name can collide with a same-named network created by other tools, so it is now `genkan`. After upgrading genkan (re-run `init.sh`), change `proxy` to `genkan` in each project's compose file and run `docker compose up -d` again. Until you do, genkan cannot reach that project. Once nothing is attached to the old `proxy` network, remove it with `docker network rm proxy`.
 
 ## HTTPS
 

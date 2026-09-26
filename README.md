@@ -30,7 +30,7 @@ docker compose up -d
 
 ## プロジェクトの追加
 
-ラベルを2行追加して `proxy` ネットワークに参加させるだけです。
+ラベルを2行追加して `genkan` ネットワークに参加させるだけです。
 
 ```yml
 services:
@@ -38,10 +38,10 @@ services:
     labels:
       caddy: myapp.localhost
       caddy.reverse_proxy: "{{upstreams 5173}}"
-    networks: [default, proxy]
+    networks: [default, genkan]
 
 networks:
-  proxy:
+  genkan:
     external: true
 ```
 
@@ -49,6 +49,10 @@ networks:
 - プロジェクト側で `ports:` は公開しないでください。公開しないことがポート競合をなくす仕組みそのものです
 
 あとは http://myapp.localhost を開くだけです（自動的にHTTPSへリダイレクトされます）。
+
+### `proxy` ネットワークから上げるとき
+
+以前はネットワーク名が `proxy` でした。汎用の名前だとほかの道具が作った同名のネットワークと取り違えるので、`genkan` に変えています。genkan を上げたら (`init.sh` を流し直す)、各プロジェクトの compose の `proxy` を `genkan` に書き換えて `docker compose up -d` し直してください。書き換えるまでは、そのプロジェクトには genkan から届きません。古い `proxy` ネットワークは、乗っているものが無くなってから `docker network rm proxy` で消せます。
 
 ## HTTPS
 
