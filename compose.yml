@@ -6,9 +6,9 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - CADDY_INGRESS_NETWORKS=proxy
+      - CADDY_INGRESS_NETWORKS=genkan
     networks:
-      - proxy
+      - genkan
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy-data:/data
@@ -23,17 +23,19 @@ services:
       # 認証情報の暗号化に使う ENCRYPTION_KEY (32文字以上が必須) は、
       # init.sh が生成する compose.override.yml から渡される
       - APP_URL=https://arcane.localhost
-      # proxy ネットワーク上の Caddy からの X-Forwarded-Proto を信頼し、Secure Cookie を発行させる
+      # genkan ネットワーク上の Caddy からの X-Forwarded-Proto を信頼し、Secure Cookie を発行させる
       - TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     networks:
-      - proxy
+      - genkan
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - arcane-data:/app/data
 
 networks:
-  proxy:
-    name: proxy
+  # 各プロジェクトが external で参加するネットワーク。**名前は genkan** —
+  # proxy のような汎用の名前だと、ほかの道具が作った同名のネットワークと取り違える
+  genkan:
+    name: genkan
 
 volumes:
   caddy-data:
