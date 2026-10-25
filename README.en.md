@@ -96,6 +96,8 @@ labels:
   caddy.respond: "@external 403"
 ```
 
+The check uses the address of whatever connects to genkan directly. If you put another proxy or a tunnel (such as cloudflared) in front of genkan, or run rootless Docker (which rewrites source addresses), connections from outside look like LAN connections and the rule does not help.
+
 Arcane's admin user is created as `arcane` / `arcane-admin` and forces a password change on first login. Typing that in by hand is a chore, so `init.sh` generates a strong password and sets it through the API right after startup, saves it to `arcane-password.txt`, and prints it. If the password has already been changed, it does nothing.
 
 ```

@@ -96,6 +96,8 @@ labels:
   caddy.respond: "@external 403"
 ```
 
+判定は genkan に直接繋いできた相手のアドレスで見ます。genkan の手前に別のプロキシやトンネル（cloudflared など）を置く構成や、rootless Docker（送信元が書き換わる）では、外からの接続も LAN に見えるので効きません。
+
 Arcaneの管理者は `arcane` / `arcane-admin` で作られ、初回ログイン時にパスワード変更を強制されます。手で入力するのは面倒なので、`init.sh` が起動後にAPI経由で強いパスワードを生成して設定し、`arcane-password.txt` に保存したうえで画面にも表示します。すでに変更済みなら何もしません。
 
 ```
