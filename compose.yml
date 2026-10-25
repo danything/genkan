@@ -2,9 +2,13 @@ services:
   proxy:
     image: lucaslorentz/caddy-docker-proxy:2.13.1-alpine
     restart: unless-stopped
+    # **IPv4 だけで待ち受ける。** genkan のネットワークは IPv6 を持たないので、IPv6 で来た接続は
+    # docker-proxy がネットワークのゲートウェイ (IPv4) から繋ぎ直し、元の送信元が消える。後ろのアプリには
+    # 「このマシンから来た接続」に見えるので、送信元で信頼を決めるアプリ (denpa など) が外からの接続を信頼してしまう。
+    # IPv6 で受けたいときの手順は README の「IPv6」にある
     ports:
-      - "80:80"
-      - "443:443"
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
     environment:
       - CADDY_INGRESS_NETWORKS=genkan
     networks:

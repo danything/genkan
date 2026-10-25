@@ -64,6 +64,26 @@ docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 
 実ドメインの場合は何もしなくてもLet's Encryptで自動取得されます。
 
+## IPv6
+
+**80/443 は IPv4 だけで待ち受けます。** genkan のネットワークは IPv6 を持たないので、IPv6 で来た接続は Docker（docker-proxy）がネットワークのゲートウェイ（IPv4）から繋ぎ直し、元の送信元が消えます。後ろのアプリには「このマシンから来た接続」に見えるので、送信元で信頼を決めるアプリ（[denpa](https://github.com/danything/denpa) の `TRUSTED_NETWORKS` など）が、インターネットからの接続を信頼してしまいます。
+
+IPv4 だけにしても、名前が IPv6 のアドレスも持っていれば、ブラウザは IPv4 で繋ぎ直すので開けます。開けなくなるのは IPv6 しか持たない端末だけです。
+
+IPv6 で受けたいときは、genkan のネットワークに IPv6 を持たせてから、`compose.override.yml` で IPv6 の待ち受けを足します。ネットワークは作り直しになるので、乗っているプロジェクトをいったん外してください。送信元がそのまま届くのは、Docker が ip6tables で IPv6 を転送するとき（Docker 27 以降の既定。デーモンの設定で `ip6tables: false` にしていないこと）です。この手順は手元の IPv6 で確かめていないので、足したら外から IPv6 で繋ぎ、後ろのアプリのログに元のアドレスが出ることを確かめてください。
+
+```yml
+services:
+  proxy:
+    ports:
+      - "[::]:80:80"
+      - "[::]:443:443"
+
+networks:
+  genkan:
+    enable_ipv6: true
+```
+
 ## その他
 
 DockerをWeb UIで管理できる [Arcane](https://github.com/getarcaneapp/arcane) が同梱されています → http://arcane.localhost
