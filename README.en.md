@@ -64,6 +64,26 @@ docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 
 For real domains, certificates are obtained from Let's Encrypt automatically.
 
+## IPv6
+
+**Ports 80/443 listen on IPv4 only.** The genkan network has no IPv6, so Docker (docker-proxy) re-opens IPv6 connections from the network gateway (IPv4) and the original source address is lost. Apps behind genkan then see them as connections from this machine, so an app that decides trust by source address (such as [denpa](https://github.com/danything/denpa)'s `TRUSTED_NETWORKS`) ends up trusting connections from the internet.
+
+With IPv4 only, a name that also has an IPv6 address still opens, because the browser falls back to IPv4. Only IPv6-only clients lose access.
+
+To accept IPv6, give the genkan network IPv6 first (Docker 27 or later; source addresses then arrive intact), then add IPv6 listeners in `compose.override.yml`. The network has to be recreated, so detach the projects on it first.
+
+```yml
+services:
+  proxy:
+    ports:
+      - "[::]:80:80"
+      - "[::]:443:443"
+
+networks:
+  genkan:
+    enable_ipv6: true
+```
+
 ## Extras
 
 Comes with [Arcane](https://github.com/getarcaneapp/arcane), a web UI for managing Docker → http://arcane.localhost
