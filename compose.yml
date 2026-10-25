@@ -22,6 +22,11 @@ services:
     restart: unless-stopped
     labels:
       caddy: arcane.localhost
+      # **外 (インターネット) からは開かせない。** `*.localhost` はこのマシンでしか引けない名前だが、
+      # Host を書き換えれば外からも届く。Docker を操作できる画面なので、送信元が LAN とこのマシン
+      # (Docker のゲートウェイを含む) のときだけ通す。判定は genkan に直接繋いできた相手のアドレス
+      caddy.@external.not: remote_ip private_ranges
+      caddy.respond: "@external 403"
       caddy.reverse_proxy: "{{upstreams 3552}}"
     environment:
       # 認証情報の暗号化に使う ENCRYPTION_KEY (32文字以上が必須) は、

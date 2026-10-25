@@ -88,6 +88,14 @@ networks:
 
 DockerをWeb UIで管理できる [Arcane](https://github.com/getarcaneapp/arcane) が同梱されています → http://arcane.localhost
 
+ArcaneはDockerを操作できる画面なので、インターネットからは開けません（送信元がLANとこのマシンのときだけ通し、ほかは403）。`*.localhost` はこのマシンでしか引けない名前ですが、Hostを書き換えれば外からも届くためです。自分のプロジェクトも同じようにしたいときは、ラベルを2行足します:
+
+```yml
+labels:
+  caddy.@external.not: remote_ip private_ranges
+  caddy.respond: "@external 403"
+```
+
 Arcaneの管理者は `arcane` / `arcane-admin` で作られ、初回ログイン時にパスワード変更を強制されます。手で入力するのは面倒なので、`init.sh` が起動後にAPI経由で強いパスワードを生成して設定し、`arcane-password.txt` に保存したうえで画面にも表示します。すでに変更済みなら何もしません。
 
 ```
