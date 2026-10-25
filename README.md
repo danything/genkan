@@ -70,7 +70,7 @@ docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 
 IPv4 だけにしても、名前が IPv6 のアドレスも持っていれば、ブラウザは IPv4 で繋ぎ直すので開けます。開けなくなるのは IPv6 しか持たない端末だけです。
 
-IPv6 で受けたいときは、genkan のネットワークに IPv6 を持たせてから（Docker 27 以降。送信元がそのまま届くようになる）、`compose.override.yml` で IPv6 の待ち受けを足します。ネットワークは作り直しになるので、乗っているプロジェクトをいったん外してください。
+IPv6 で受けたいときは、genkan のネットワークに IPv6 を持たせてから、`compose.override.yml` で IPv6 の待ち受けを足します。ネットワークは作り直しになるので、乗っているプロジェクトをいったん外してください。送信元がそのまま届くのは、Docker が ip6tables で IPv6 を転送するとき（Docker 27 以降の既定。デーモンの設定で `ip6tables: false` にしていないこと）です。この手順は手元の IPv6 で確かめていないので、足したら外から IPv6 で繋ぎ、後ろのアプリのログに元のアドレスが出ることを確かめてください。
 
 ```yml
 services:

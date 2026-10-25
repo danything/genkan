@@ -70,7 +70,7 @@ For real domains, certificates are obtained from Let's Encrypt automatically.
 
 With IPv4 only, a name that also has an IPv6 address still opens, because the browser falls back to IPv4. Only IPv6-only clients lose access.
 
-To accept IPv6, give the genkan network IPv6 first (Docker 27 or later; source addresses then arrive intact), then add IPv6 listeners in `compose.override.yml`. The network has to be recreated, so detach the projects on it first.
+To accept IPv6, give the genkan network IPv6 first, then add IPv6 listeners in `compose.override.yml`. The network has to be recreated, so detach the projects on it first. Source addresses arrive intact only when Docker forwards IPv6 with ip6tables (the default since Docker 27; do not set `ip6tables: false` in the daemon config). This procedure has not been tested on a real IPv6 setup, so after adding it, connect from outside over IPv6 and check that the app behind genkan logs the original address.
 
 ```yml
 services:
