@@ -18,7 +18,7 @@ services:
       - caddy-data:/data
 
   arcane:
-    image: ghcr.io/getarcaneapp/arcane:v2.17.1
+    image: ghcr.io/getarcaneapp/arcane:v2.17.2
     restart: unless-stopped
     labels:
       caddy: arcane.localhost
